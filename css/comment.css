@@ -1,0 +1,57 @@
+.name {
+    font-size: 15px;
+    margin-top: 0;
+    margin-left: 20px;
+    display: inline;
+}
+
+.date {
+    font-size: 15px;
+    padding: 0px;
+    margin-top: 0;
+    margin-left: 20px;
+    display: inline;
+}
+
+.reply {
+    font-size: 15px;
+    padding: 0px;
+    margin-top: 0;
+    margin-left: 20px;
+    display: inline;
+}
+
+.replyNorm {
+    font-size: 15px;
+    padding: 0px;
+    margin-top: 0;
+    margin-left: 20px;
+    display: inline;
+}
+.reply_reply {
+    font-size: 15px;
+    padding: 0px;
+    margin-top: 0;
+    margin-left: 20px;
+    display: inline;
+}
+
+article {
+    border: 2px solid Blue;
+    border-radius: 25px;
+    margin-top: 10px;
+}
+
+body {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+}
+
+.reply1 {
+    margin-left: 50px;
+}
+
+.reply2 {
+    margin-left: 100px;
+}
