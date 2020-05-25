@@ -145,14 +145,127 @@ class Split {
                         $dummyArray, $value, $addIndex + $value[3]);
             $addIndex1++;
         } 
-        echo "<pre>"; print_r($dummyArray); echo "</pre>";
- 
         $this->newArray = $dummyArray;
     }
 
+    function testUntilZero($array, $start) {
+        if (!is_array($array)) {
+            return -1; 
+        }
+        for ($i = $start; $i < count($array); $i++) {
+            if ($array[$i][3] = 0) {
+                return $i;
+            }
+        }
+        return -1;
+    }
+
+    function reUntilIndex($array) {
+        if (!is_array($array)) {
+            return -1; 
+        }
+
+        $splitAt = 1000;
+        $pointsCounter = 0;
+        $tooSmall = true;
+        foreach ($array as $key => $value) {
+            $pointsCounter += 100;
+            $stringLength = strlen($value[1]);
+            if ($stringLength > 100) {
+                $pointsCounter += ($stringLength / 100) * 20;
+            } else {
+                $pointsCounter += 20;
+            }
+            if ($pointsCounter > $splitAt) {
+                $tooSmall = false;
+                if ($value[3] == 0) {
+                    return $key; 
+                } else {
+                    return $this->testUntilZero($array, $key); 
+                }
+            }
+        } 
+        if ($tooSmall) {
+            return 0;
+        }
+    }
+    
+    function reInsertArray($array, $untilIndex) {
+        $reArray = Array();    
+        foreach ($array as $key => $value) {
+            if ($key == $untilIndex) {
+                break;
+            }
+            $reArray[$key] = $value;
+        }
+        return $reArray;
+    }
+
+    function reDelPortion($array, $untilIndex) {
+        $reArray = Array();    
+        $count = 0;
+        for ($i = $untilIndex; $i < count($array); $i++) {
+            $reArray[$count] = $array[$i]; 
+            $count++;
+        }
+
+        return $reArray;
+    }
+
+    function split() {
+        $split = true; 
+        $dummyArray = $this->newArray;
+        $count = 0;
+        while ($split) {
+            $untilIndex = $this->reUntilIndex($dummyArray); 
+            echo "Until Index: " . $untilIndex . "<br>";
+            echo "<pre>"; print_r($dummyArray); echo "</pre>";
+            if ($untilIndex == 0) {
+                $this->mkTAbleAndInsert($dummyArray);
+                $split = false;
+            } elseif  ($untilIndex != -1) {
+                $insertArray = $this->reInsertArray($dummyArray, $untilIndex); 
+                $this->mkTAbleAndInsert($insertArray);
+                $dummyArray = $this->reDelPortion($dummyArray, $untilIndex);
+            } else  {
+                $split = false; 
+            }
+        }
+    }
+
+    function deleteTables() {
+        $count = 0;
+        $table = true;
+        while ($table) {
+            $conn = $this->conn();
+            if ($conn->connect_error) {
+              die("Connection failed: " . $conn->connect_error);
+            }
+
+            $sql = "select 1 from comments$count LIMIT 1";
+            $result = $conn->query($sql);
+
+            if($result !== FALSE) {
+                $conn = $this->conn();
+
+                $result = $conn->query("DROP TABLE comments$count");
+
+                if($result !== FALSE)
+                {
+                   //echo("This table has been deleted.");
+                }else{
+                   echo("This table has not been deleted.");
+                }
+            } else {
+                $table = false;
+            }
+            $count++;
+        }
+    }
 }
 
 $split = new Split();
+$split->deleteTables();
 $split->setData();
 $split->arrangeData();
-$split->mkTableAndInsert($split->newArray);
+$split->split();
