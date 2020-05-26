@@ -1,4 +1,6 @@
 <?php
+include "split.php";
+
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -44,16 +46,22 @@ if ($conn->query($sql) === true) {
 $conn->close();
 
 function insertData($name, $comment, $date, $reply_num, $into_div) {
+    global $split; 
     $sql = "INSERT INTO my_comments (comment, name, date, reply_num, into_div)
                  VALUES (?, ?, ?, ?, ?)";
     $conn = conn();
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sssis", $comment, $name, $date, $reply_num, $into_div);
     $stmt->execute();
+    
+    $split->deleteTables();
+    $split->setData();
+    $split->arrangeData();
+    $split->split();
 }
 
-function getData() {
-    $sql = "SELECT * FROM my_comments";    
+function getData($index) {
+    $sql = "SELECT * FROM comments$index";    
     $conn = conn();
     $result = $conn->query($sql);
     $array = Array();
@@ -72,10 +80,36 @@ function getData() {
 
 if (isset($_GET['name'], $_GET['comment'], $_GET['date'], 
             $_GET['reply_num'], $_GET['into_div'])) {
-    insertData($_GET['name'], $_GET['comment'], $_GET['date'], $_GET['reply_num'], $_GET['into_div']);    
+    insertData($_GET['name'], $_GET['comment'], $_GET['date'], 
+                    $_GET['reply_num'], $_GET['into_div']);    
     echo "Data arrived";
 }
 
-if ($_GET['wantData'] == 'true') {
-    echo json_encode(getData());  
+if (isset($_GET['wantData'], $_GET['index'])) {
+    echo json_encode(getData($_GET['index']));  
 }
+
+if (isset($_GET['wantLength'])) {
+        $count = 0;
+        $table = true;
+        $length = 0;
+        while ($table) {
+            $conn = conn();
+            if ($conn->connect_error) {
+              die("Connection failed: " . $conn->connect_error);
+            }
+
+            $sql = "select 1 from comments$count LIMIT 1";
+            $result = $conn->query($sql);
+
+            if($result !== FALSE) {
+                $length++; 
+            } else {
+                $table = false;
+            }
+            $count++;
+        }
+    echo $length;
+}
+
+

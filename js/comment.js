@@ -1,5 +1,4 @@
 "use strict"
-// dont forget solve bug
 var form = document.getElementById("form");
 form.addEventListener("submit", sendData);
 var lengthVar = 0;
@@ -30,7 +29,7 @@ function addElements(article, date, name) {
 
 
 function addArticle(name, comment, date, index) {
-    var wrapper = document.getElementById("wrapper");  
+    var wrapper = document.getElementById("comment_wrapper");  
     var article = document.createElement('article');        
     article.setAttribute("class", "normal");
     article.setAttribute("id", "id" + index);
@@ -53,8 +52,10 @@ function insertAfter(referenceNode, newNode) {
 }
 
 function addReply(name, comment, date, index) {
+    replyReplied.push(index - 1);
+
     var refElem = document.getElementById(String("id" + index));            
-    var main = document.getElementById("wrapper");
+    var main = document.getElementById("comment_wrapper");
 
     var article = document.createElement('article');        
     article.setAttribute('id', 'reply' + Number(reply_replyLength));
@@ -177,15 +178,14 @@ function insertComments() {
     var xmlhttp0 = new XMLHttpRequest();
     xmlhttp0.addEventListener('readystatechange', (e) => {
         if (xmlhttp0.readyState==4 && xmlhttp0.status==200) {
-            var array = JSON.parse(xmlhttp0.responseText);
-            insert.array = array;      
+            insert.array = JSON.parse(xmlhttp0.responseText);      
             insert.insertAllComments();
 
             var allLinks = document.querySelectorAll('.replyNorm');
             allLinks.forEach( (elem) => {
                 elem.addEventListener("click", reply);
             });
-        
+
             var allLinks = document.querySelectorAll('.reply');
             allLinks.forEach( (elem) => {
                 elem.addEventListener("click", reply1);
@@ -197,24 +197,24 @@ function insertComments() {
             });
         }
     });
-    xmlhttp0.open('GET', 'php/comment.php?wantData=true', true);
+    xmlhttp0.open('GET', 'php/comment.php?wantData=true&index=0');
     xmlhttp0.send();    
 }
 
 function reply(e) {
-    e.preventDefault();
+e.preventDefault();
 
-    var elemEqualIndex = false;
-    replyReplied.forEach( (elem) => {
-        if (elem == e.currentTarget.id) {
-            elemEqualIndex = true;
-        }
-    });
-   
-    if (!elemEqualIndex) { 
-        var elemReplyId = e.currentTarget.id;
-        replyMode = true;
-        replyId = Number(elemReplyId) + 1;
+var elemEqualIndex = false;
+replyReplied.forEach( (elem) => {
+if (elem == e.currentTarget.id) {
+    elemEqualIndex = true;
+}
+});
+
+if (!elemEqualIndex) { 
+    var elemReplyId = e.currentTarget.id;
+    replyMode = true;
+    replyId = Number(elemReplyId) + 1;
         reply_reply = false;
     } else {
         replyMode = true;

@@ -153,7 +153,7 @@ class Split {
             return -1; 
         }
         for ($i = $start; $i < count($array); $i++) {
-            if ($array[$i][3] = 0) {
+            if ($array[$i][3] == 0) {
                 return $i;
             }
         }
@@ -218,8 +218,6 @@ class Split {
         $count = 0;
         while ($split) {
             $untilIndex = $this->reUntilIndex($dummyArray); 
-            echo "Until Index: " . $untilIndex . "<br>";
-            echo "<pre>"; print_r($dummyArray); echo "</pre>";
             if ($untilIndex == 0) {
                 $this->mkTAbleAndInsert($dummyArray);
                 $split = false;
@@ -265,7 +263,3 @@ class Split {
 }
 
 $split = new Split();
-$split->deleteTables();
-$split->setData();
-$split->arrangeData();
-$split->split();
