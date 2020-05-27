@@ -28,11 +28,11 @@ function addElements(article, date, name) {
 }
 
 
-function addArticle(name, comment, date, index) {
+function addArticle(name, comment, date, index, plusIndex = 0) {
     var wrapper = document.getElementById("comment_wrapper");  
     var article = document.createElement('article');        
     article.setAttribute("class", "normal");
-    article.setAttribute("id", "id" + index);
+    article.setAttribute("id", "id" + Number(index + plusIndex));
     wrapper.appendChild(article); 
 
     addElements(article, date, name); 
@@ -41,7 +41,7 @@ function addArticle(name, comment, date, index) {
     elemReply.innerHTML = "reply";
     elemReply.setAttribute('href', '');
     elemReply.setAttribute('class', 'replyNorm');
-    elemReply.setAttribute('id', index);
+    elemReply.setAttribute('id', Number(index + plusIndex));
     article.appendChild(elemReply);
 
     elemComment(article, comment);
@@ -152,20 +152,22 @@ function sendData(e) {
 
 var insert = {
     array: null,
-    insertOneComment: function(index) {
+    insertOneComment: function(index, plusIndex) {
        addArticle(this.array[index][0], this.array[index][1], 
-                    this.array[index][2], index); 
+                    this.array[index][2], index, plusIndex); 
     },
-    insertAllComments: function() {
+    insertAllComments: function(plusIndex = 0) {
+        var count = 0;
         for (var i = 0; i < this.array.length; ++i) {
             if (this.array[i][3] != 0 && this.array[i][4] == "false") {
                 addReply(this.array[i][0], this.array[i][1], 
-                    this.array[i][2], this.array[i][3]);
+                    this.array[i][2], Number(this.array[i][3]));
             } else if (this.array[i][4] == 'true') {
                 addReply_reply(this.array[i][0], this.array[i][1], 
                     this.array[i][2], Number(this.array[i][3]));
             } else {
-                this.insertOneComment(i);
+                this.insertOneComment(count, plusIndex);
+                count++;
             }
         }          
         lengthVar = this.array.length;
@@ -202,19 +204,19 @@ function insertComments() {
 }
 
 function reply(e) {
-e.preventDefault();
+    e.preventDefault();
 
-var elemEqualIndex = false;
-replyReplied.forEach( (elem) => {
-if (elem == e.currentTarget.id) {
-    elemEqualIndex = true;
-}
-});
+    var elemEqualIndex = false;
+    replyReplied.forEach( (elem) => {
+        if (elem == e.currentTarget.id) {
+            elemEqualIndex = true;
+        }
+    });
 
-if (!elemEqualIndex) { 
-    var elemReplyId = e.currentTarget.id;
-    replyMode = true;
-    replyId = Number(elemReplyId) + 1;
+    if (!elemEqualIndex) { 
+        var elemReplyId = e.currentTarget.id;
+        replyMode = true;
+        replyId = Number(elemReplyId) + 1;
         reply_reply = false;
     } else {
         replyMode = true;

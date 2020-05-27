@@ -142,8 +142,8 @@ class Split {
         $addIndex1 = 1;
         foreach ($arrayOfIntoDiv as $value) {
             $dummyArray = $this->insertArray(
-                        $dummyArray, $value, $addIndex + $value[3]);
-            $addIndex1++;
+                        $dummyArray, $value, $addIndex1 + $value[3]);
+            $addIndex1 += 2;
         } 
         $this->newArray = $dummyArray;
     }
@@ -153,7 +153,7 @@ class Split {
             return -1; 
         }
         for ($i = $start; $i < count($array); $i++) {
-            if ($array[$i][3] == 0) {
+            if ($array[$i][3] == 0 && $array[$i][4] == "false") {
                 return $i;
             }
         }
@@ -178,7 +178,7 @@ class Split {
             }
             if ($pointsCounter > $splitAt) {
                 $tooSmall = false;
-                if ($value[3] == 0) {
+                if ($value[3] == 0 && $value[4] == "false") {
                     return $key; 
                 } else {
                     return $this->testUntilZero($array, $key); 
@@ -226,6 +226,7 @@ class Split {
                 $this->mkTAbleAndInsert($insertArray);
                 $dummyArray = $this->reDelPortion($dummyArray, $untilIndex);
             } else  {
+                $this->mkTAbleAndInsert($dummyArray);
                 $split = false; 
             }
         }
@@ -263,3 +264,4 @@ class Split {
 }
 
 $split = new Split();
+

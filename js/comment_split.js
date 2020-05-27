@@ -25,10 +25,6 @@ function drawIndexes(arIndexLength) {
 
 document.addEventListener('DOMContentLoaded', getLength);
 
-function deleteAllComments() {
-
-}
-
 function indexLinkEvent(e) {
     e.preventDefault();
     var index = e.currentTarget.innerHTML - 1;
@@ -59,3 +55,63 @@ function indexLinkEvent(e) {
     xmlhttp0.open('GET', 'php/comment.php?wantData=true&index=' + index);
     xmlhttp0.send();    
 }
+
+function drawIndexes(arIndexLength) {
+    var index_wrapper = document.getElementById('index_wrapper');
+    for (var i = 0; i < arIndexLength; ++i) {
+        var indexLink = document.createElement('a');
+        indexLink.innerHTML = i + 1;     
+        indexLink.setAttribute('href', '');
+        index_wrapper.appendChild(indexLink);
+
+        indexLink.addEventListener('click', indexLinkEvent);  
+    }
+}
+
+document.addEventListener('DOMContentLoaded', getLength);
+
+function indexLinkEvent(e) {
+    e.preventDefault();
+    var index = e.currentTarget.innerHTML - 1;
+    var xmlhttp0 = new XMLHttpRequest();
+    xmlhttp0.addEventListener('readystatechange', (e) => {
+        if (xmlhttp0.readyState==4 && xmlhttp0.status==200) {
+            var array = JSON.parse(xmlhttp0.responseText);      
+            getPlusIndex(array, index);
+        }
+    });
+    xmlhttp0.open('GET', 'php/comment.php?wantData=true&index=' + index);
+    xmlhttp0.send();    
+}
+
+function getPlusIndex(array, index) {
+    var xmlhttp0 = new XMLHttpRequest();
+    xmlhttp0.addEventListener('readystatechange', (e) => {
+        if (xmlhttp0.readyState==4 && xmlhttp0.status==200) {
+            var plusIndex = xmlhttp0.responseText;
+            var wrapper = document.getElementById("comment_wrapper");
+            wrapper.textContent = '';
+            insert.array = array;      
+            insert.insertAllComments(Number(plusIndex));
+
+            var allLinks = document.querySelectorAll('.replyNorm');
+            allLinks.forEach( (elem) => {
+                elem.addEventListener("click", reply);
+            });
+
+            var allLinks = document.querySelectorAll('.reply');
+            allLinks.forEach( (elem) => {
+                elem.addEventListener("click", reply1);
+            });
+
+            var allLinks = document.querySelectorAll('.reply_reply');
+            allLinks.forEach( (elem) => {
+                elem.addEventListener("click", reply_replyEvent);
+            });
+        }
+    });
+    xmlhttp0.open('GET', 'php/comment.php?wantIndexPlus=true&indexForPlus=' + 
+           index );
+    xmlhttp0.send();    
+}   
+

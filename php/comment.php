@@ -54,17 +54,17 @@ function insertData($name, $comment, $date, $reply_num, $into_div) {
     $stmt->bind_param("sssis", $comment, $name, $date, $reply_num, $into_div);
     $stmt->execute();
     
-    $split->deleteTables();
-    $split->setData();
-    $split->arrangeData();
+    $split->deletetables();
+    $split->setdata();
+    $split->arrangedata();
     $split->split();
 }
 
-function getData($index) {
-    $sql = "SELECT * FROM comments$index";    
+function getdata($index) {
+    $sql = "select * from comments$index";    
     $conn = conn();
     $result = $conn->query($sql);
-    $array = Array();
+    $array = array();
     if ($result->num_rows > 0) {
         $count = 0;
         while ($row = $result->fetch_assoc()) {
@@ -78,38 +78,61 @@ function getData($index) {
     return $array;
 }
 
-if (isset($_GET['name'], $_GET['comment'], $_GET['date'], 
-            $_GET['reply_num'], $_GET['into_div'])) {
-    insertData($_GET['name'], $_GET['comment'], $_GET['date'], 
-                    $_GET['reply_num'], $_GET['into_div']);    
-    echo "Data arrived";
+if (isset($_get['name'], $_get['comment'], $_get['date'], 
+            $_get['reply_num'], $_get['into_div'])) {
+    insertdata($_get['name'], $_get['comment'], $_get['date'], 
+                    $_get['reply_num'], $_get['into_div']);    
+    echo "data arrived";
 }
 
-if (isset($_GET['wantData'], $_GET['index'])) {
-    echo json_encode(getData($_GET['index']));  
+if (isset($_get['wantdata'], $_get['index'])) {
+    echo json_encode(getdata($_get['index']));  
+}
+
+function getlength() {
+    $count = 0;
+    $table = true;
+    $length = 0;
+    while ($table) {
+        $conn = conn();
+        if ($conn->connect_error) {
+          die("connection failed: " . $conn->connect_error);
+        }
+
+        $sql = "select 1 from comments$count LIMIT 1";
+        $result = $conn->query($sql);
+
+        if($result !== FALSE) {
+            $length++; 
+        } else {
+            $table = false;
+        }
+        $count++;
+    }
+    return $length;
 }
 
 if (isset($_GET['wantLength'])) {
-        $count = 0;
-        $table = true;
-        $length = 0;
-        while ($table) {
-            $conn = conn();
-            if ($conn->connect_error) {
-              die("Connection failed: " . $conn->connect_error);
-            }
-
-            $sql = "select 1 from comments$count LIMIT 1";
-            $result = $conn->query($sql);
-
-            if($result !== FALSE) {
-                $length++; 
-            } else {
-                $table = false;
-            }
-            $count++;
-        }
-    echo $length;
+    echo getLength();
 }
 
+function getIndexPlus($index) {
+    if ($index > getLength()) {
+        return "something is wrong <br>";
+    }
+    
+    $indexPlus = 0;
+    for ($i = 0; $i < $index; ++$i) {
+        $array = getData($i);
+        foreach ($array as $value) {
+            if ($value[3] == 0) {
+                $indexPlus++;
+            }
+        }
+    }
+    return $indexPlus;
+}
 
+if (isset($_GET['wantIndexPlus'], $_GET['indexForPlus'])) {
+    echo getIndexPlus($_GET['indexForPlus']);
+}
