@@ -143,11 +143,11 @@ function sendData(e) {
         }
     });
     var add_div = '&into_div=' + reply_reply;
-    xmlhttp0.open('GET', 'php/comment.php?' + 
-                    'name=' + name + '&comment=' + comment +
+    xmlhttp0.open('POST', "php/comment.php", true);
+    xmlhttp0.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xmlhttp0.send('name=' + name + '&comment=' + comment +
                         '&date=' + date + '&reply_num=' + reply_num +
-                            add_div, true);
-    xmlhttp0.send();    
+                            add_div);    
 }
 
 var insert = {

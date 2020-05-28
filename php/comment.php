@@ -78,15 +78,16 @@ function getdata($index) {
     return $array;
 }
 
-if (isset($_get['name'], $_get['comment'], $_get['date'], 
-            $_get['reply_num'], $_get['into_div'])) {
-    insertdata($_get['name'], $_get['comment'], $_get['date'], 
-                    $_get['reply_num'], $_get['into_div']);    
+if (isset($_POST['name'], $_POST['comment'], $_POST['date'], 
+            $_POST['reply_num'], $_POST['into_div'])) {
+
+    insertdata($_POST['name'], $_POST['comment'], $_POST['date'], 
+                    $_POST['reply_num'], $_POST['into_div']);    
     echo "data arrived";
 }
 
-if (isset($_get['wantdata'], $_get['index'])) {
-    echo json_encode(getdata($_get['index']));  
+if (isset($_GET['wantData'], $_GET['index'])) {
+    echo json_encode(getdata($_GET['index']));  
 }
 
 function getlength() {

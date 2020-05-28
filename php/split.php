@@ -1,5 +1,5 @@
 <?php
-
+//as reminder bug lies in arrData by into div
 class Split {
     private $dataArray = null;
     private $tableNumLength = 0;
@@ -28,8 +28,8 @@ class Split {
             $count = 0;
             while ($row = $result->fetch_assoc()) {
                 $array[$count] = array(utf8_encode($row["name"]), 
-                    utf8_encode($row["comment"]), 
-                        utf8_encode($row['date']), $row['reply_num'], $row['into_div']); 
+                    utf8_encode($row["comment"]), utf8_encode($row['date']), 
+                        $row['reply_num'], $row['into_div']); 
                 $count++;
             }
 
@@ -38,6 +38,10 @@ class Split {
     }
 
     function mkTableAndInsert($array) {
+        if (!is_array($array)) {
+            return -1; 
+        }
+
         $sql = "CREATE TABLE IF NOT EXISTS comments$this->tableNumLength (
             id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
             comment VARCHAR(1000),
@@ -139,11 +143,18 @@ class Split {
         }
         unset($value);
         $arrayOfIntoDiv = $this->bubbleSort($arrayOfIntoDiv);
-        $addIndex1 = 1;
+        $addIndexVar = null;
         foreach ($arrayOfIntoDiv as $value) {
+            $addIndex1 = null;
+            for ($i = 0; $i <= $value[3]; ++$i) {
+                if ($dummyArray[$i][3] != 0) {
+                    $addIndex1++;
+                }
+            }
+            $addIndex1 += $addIndexVar;
             $dummyArray = $this->insertArray(
                         $dummyArray, $value, $addIndex1 + $value[3]);
-            $addIndex1 += 2;
+            $addIndexVar++; 
         } 
         $this->newArray = $dummyArray;
     }
