@@ -236,6 +236,17 @@ function reply1(e) {
     var elemReplyId = e.currentTarget.id;
 
     replyId = elemReplyId.charAt(5);
+    var counter = 6;
+    var isNumber = true;
+    while (isNumber) {
+        if (elemReplyId.charAt(counter)) {
+            isNumber = true; 
+            replyId += elemReplyId.charAt(counter);
+        } else {
+            isNumber = false;
+        }
+        counter++;
+    }
     replyMode = true;
 
     var reply_cancel = document.getElementById('reply_cancel'); 
@@ -250,6 +261,18 @@ function reply_replyEvent(e) {
     var elemReplyId = e.currentTarget.id;
 
     replyId = elemReplyId.charAt(11);
+    var counter = 12;
+    var isNumber = true;
+    while (isNumber) {
+        if (elemReplyId.charAt(counter)) {
+            isNumber = true; 
+            replyId += elemReplyId.charAt(counter);
+        } else {
+            isNumber = false;
+        }
+        counter++;
+    }
+ 
     replyMode = true;
 
     var reply_cancel = document.getElementById('reply_cancel'); 
