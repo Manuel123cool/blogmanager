@@ -1,5 +1,4 @@
 <?php
-//as reminder bug lies in arrData by into div
 class Split {
     private $dataArray = null;
     private $tableNumLength = 0;
@@ -143,14 +142,23 @@ class Split {
         }
         unset($value);
         $arrayOfIntoDiv = $this->bubbleSort($arrayOfIntoDiv);
+        //echo "<pre>"; print_r($dummyArray); echo "</pre>"; 
         $addIndexVar = null;
         foreach ($arrayOfIntoDiv as $value) {
-            $addIndex1 = null;
-            for ($i = 0; $i <= $value[3]; ++$i) {
-                if ($dummyArray[$i][3] != 0) {
-                    $addIndex1++;
-                }
+            $addIndex1 = 0;
+            $count3 = 0;
+            $noSameElemNum = true;
+            while ($noSameElemNum) {
+                if ($dummyArray[$count3][3] == $value[3] && 
+                    $dummyArray[$count3][4] == "false") {
+                    $noSameElemNum = false; 
+                } 
+                if ($dummyArray[$count3][3] != 0) {
+                    $addIndex1++; 
+                } 
+                $count3++;
             }
+
             $addIndex1 += $addIndexVar;
             $dummyArray = $this->insertArray(
                         $dummyArray, $value, $addIndex1 + $value[3]);
@@ -275,4 +283,3 @@ class Split {
 }
 
 $split = new Split();
-
