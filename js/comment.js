@@ -1,12 +1,16 @@
 "use strict"
 var form = document.getElementById("form");
 form.addEventListener("submit", sendData);
-var lengthVar = 0;
-var replyMode = false;
-var reply_reply = false;
-var reply_replyLength = 0;
-var replyId = null;
-var replyReplied = [];
+
+var commentObj = {
+    lengthVar: 0,
+    replyMode: false,
+    reply_reply: false,
+    reply_replyLength: 0,
+    replyId: null,
+    replyReplied: [],
+    arrayOfReplyId: []
+};
 
 function elemComment(article, comment) {
     var elemComment = document.createElement('p');
@@ -52,15 +56,15 @@ function insertAfter(referenceNode, newNode) {
 }
 
 function addReply(name, comment, date, index) {
-    replyReplied.push(index - 1);
+    commentObj.replyReplied.push(index - 1);
 
     var refElem = document.getElementById(String("id" + index));            
     var main = document.getElementById("comment_wrapper");
 
     var article = document.createElement('article');        
-    article.setAttribute('id', 'reply' + Number(reply_replyLength));
+    article.setAttribute('id', 'reply' + Number(commentObj.reply_replyLength));
     article.setAttribute('class', 'reply1');
-    reply_replyLength++;
+    commentObj.reply_replyLength++;
     main.insertBefore(article ,refElem); 
 
     var div = document.createElement('div');
@@ -80,7 +84,7 @@ function addReply(name, comment, date, index) {
 }
 
 function addReply_reply(name, comment, date, index) {
-    replyReplied.push(index - 1);
+    commentObj.replyReplied.push(index - 1);
 
     var article = document.createElement('article');        
     article.setAttribute('class', 'reply2');
@@ -108,15 +112,28 @@ function sendData(e) {
     var date = dateObj.toDateString(); 
     var reply_num = 0;
 
-    if (replyMode && !reply_reply) {
-        addReply(name, comment, date, replyId);
-        reply_num = replyId;
-    } else if (replyMode && reply_reply) {
-        addReply_reply(name, comment, date, replyId);
-        reply_num = replyId;
+    if (commentObj.replyMode && !commentObj.reply_reply) {
+        var replyIdEqual = false;
+        commentObj.arrayOfReplyId.forEach( (elem) => {
+            if (elem == commentObj.replyId) {
+                replyIdEqual = true;
+            }
+        });
+        if (replyIdEqual) {
+            addReply_reply(name, comment, date, commentObj.replyId);
+            reply_num = commentObj.replyId;
+            commentObj.reply_reply = true;
+        } else {
+            addReply(name, comment, date, commentObj.replyId);
+            reply_num = commentObj.replyId;
+            commentObj.arrayOfReplyId.push(reply_num);
+        }
+    } else if (commentObj.replyMode && commentObj.reply_reply) {
+        addReply_reply(name, comment, date, commentObj.replyId);
+        reply_num = commentObj.replyId;
     } else {
-        addArticle(name, comment, date, lengthVar);    
-        lengthVar++;
+        addArticle(name, comment, date, commentObj.lengthVar);    
+        commentObj.lengthVar++;
     }
 
     var allLinks = document.querySelectorAll('.reply');
@@ -142,7 +159,7 @@ function sendData(e) {
             console.log(responseText);
         }
     });
-    var add_div = '&into_div=' + reply_reply;
+    var add_div = '&into_div=' + commentObj.reply_reply;
     xmlhttp0.open('POST', "php/comment.php", true);
     xmlhttp0.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xmlhttp0.send('name=' + name + '&comment=' + comment +
@@ -170,7 +187,7 @@ var insert = {
                 count++;
             }
         }          
-        lengthVar = this.array.length;
+        commentObj.lengthVar = this.array.length;
     }
 }
 
@@ -207,7 +224,7 @@ function reply(e) {
     e.preventDefault();
 
     var elemEqualIndex = false;
-    replyReplied.forEach( (elem) => {
+    commentObj.replyReplied.forEach( (elem) => {
         if (elem == e.currentTarget.id) {
             elemEqualIndex = true;
         }
@@ -215,13 +232,13 @@ function reply(e) {
 
     if (!elemEqualIndex) { 
         var elemReplyId = e.currentTarget.id;
-        replyMode = true;
-        replyId = Number(elemReplyId) + 1;
-        reply_reply = false;
+        commentObj.replyMode = true;
+        commentObj.replyId = Number(elemReplyId) + 1;
+        commentObj.reply_reply = false;
     } else {
-        replyMode = true;
-        reply_reply = true;
-        replyId = Number(e.currentTarget.id) + 1;
+        commentObj.replyMode = true;
+        commentObj.reply_reply = true;
+        commentObj.replyId = Number(e.currentTarget.id) + 1;
     } 
 
     var reply_cancel = document.getElementById('reply_cancel'); 
@@ -231,23 +248,23 @@ function reply(e) {
 
 function reply1(e) {
     e.preventDefault();
-    replyMode = true;
-    reply_reply = true;
+    commentObj.replyMode = true;
+    commentObj.reply_reply = true;
     var elemReplyId = e.currentTarget.id;
 
-    replyId = elemReplyId.charAt(5);
+    commentObj.replyId = elemReplyId.charAt(5);
     var counter = 6;
     var isNumber = true;
     while (isNumber) {
         if (elemReplyId.charAt(counter)) {
             isNumber = true; 
-            replyId += elemReplyId.charAt(counter);
+            commentObj.replyId += elemReplyId.charAt(counter);
         } else {
             isNumber = false;
         }
         counter++;
     }
-    replyMode = true;
+    commentObj.replyMode = true;
 
     var reply_cancel = document.getElementById('reply_cancel'); 
     reply_cancel.innerHTML = 'cancel reply';
@@ -256,24 +273,24 @@ function reply1(e) {
 
 function reply_replyEvent(e) {
     e.preventDefault();
-    replyMode = true;
-    reply_reply = true;
+    commentObj.replyMode = true;
+    commentObj.reply_reply = true;
     var elemReplyId = e.currentTarget.id;
 
-    replyId = elemReplyId.charAt(11);
+    commentObj.replyId = elemReplyId.charAt(11);
     var counter = 12;
     var isNumber = true;
     while (isNumber) {
         if (elemReplyId.charAt(counter)) {
             isNumber = true; 
-            replyId += elemReplyId.charAt(counter);
+            commentObj.replyId += elemReplyId.charAt(counter);
         } else {
             isNumber = false;
         }
         counter++;
     }
  
-    replyMode = true;
+    commentObj.replyMode = true;
 
     var reply_cancel = document.getElementById('reply_cancel'); 
     reply_cancel.innerHTML = 'cancel reply';
@@ -283,8 +300,8 @@ function reply_replyEvent(e) {
 
 function replyCancel(e) {
     e.preventDefault();
-    replyMode = false;
-    replyId = null;
-    reply_reply = false;
+    commentObj.replyMode = false;
+    commentObj.replyId = null;
+    commentObj.reply_reply = false;
     e.currentTarget.innerHTML = "";
 }
