@@ -13,22 +13,7 @@
     display: inline;
 }
 
-.reply {
-    font-size: 15px;
-    padding: 0px;
-    margin-top: 0;
-    margin-left: 20px;
-    display: inline;
-}
-
-.replyNorm {
-    font-size: 15px;
-    padding: 0px;
-    margin-top: 0;
-    margin-left: 20px;
-    display: inline;
-}
-.reply_reply {
+.reply, .replyNorm, .reply_reply {
     font-size: 15px;
     padding: 0px;
     margin-top: 0;

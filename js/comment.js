@@ -1,6 +1,4 @@
 "use strict"
-var form = document.getElementById("form");
-form.addEventListener("submit", sendData);
 
 var commentObj = {
     lengthVar: 0,
@@ -194,6 +192,9 @@ var insert = {
 document.addEventListener('DOMContentLoaded', insertComments);
 
 function insertComments() {
+    var form = document.getElementById("form");
+    form.addEventListener("submit", sendData);
+
     var xmlhttp0 = new XMLHttpRequest();
     xmlhttp0.addEventListener('readystatechange', (e) => {
         if (xmlhttp0.readyState==4 && xmlhttp0.status==200) {
