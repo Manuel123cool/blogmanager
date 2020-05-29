@@ -142,9 +142,12 @@ class Split {
         }
         unset($value);
         $arrayOfIntoDiv = $this->bubbleSort($arrayOfIntoDiv);
-        //echo "<pre>"; print_r($dummyArray); echo "</pre>"; 
-        $addIndexVar = null;
+        $addIndexVar = 0;
+        $oldNum = 0;
         foreach ($arrayOfIntoDiv as $value) {
+            if ($oldNum != $value[3]) {
+                $addIndexVar = 0;
+            }
             $addIndex1 = 0;
             $count3 = 0;
             $noSameElemNum = true;
@@ -158,12 +161,14 @@ class Split {
                 } 
                 $count3++;
             }
-
             $addIndex1 += $addIndexVar;
             $dummyArray = $this->insertArray(
                         $dummyArray, $value, $addIndex1 + $value[3]);
             $addIndexVar++; 
+
+            $oldNum = $value[3];
         } 
+        //echo "<pre>"; print_r($dummyArray); echo "</pre>"; 
         $this->newArray = $dummyArray;
     }
 
@@ -283,3 +288,4 @@ class Split {
 }
 
 $split = new Split();
+
