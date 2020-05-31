@@ -1,0 +1,24 @@
+.addbutton, .editButton, .saveButton {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    display: inline;
+    vertical-align: top; 
+}
+
+.headerTextarea {
+    height: 47px;
+    width: 500px;
+    margin-top: 0;
+    resize: none;
+    display: inline; 
+}
+
+#sites_wrapper article {
+    display: block;    
+    padding: 0;
+}
