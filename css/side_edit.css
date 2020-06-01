@@ -1,5 +1,4 @@
-.addbutton, .editButton, .saveButton {
-    background-color: #4CAF50; /* Green */
+.addbutton, .editButton, .saveButton, .deleteButton {
     border: none;
     color: white;
     padding: 15px 32px;
@@ -8,6 +7,22 @@
     font-size: 16px;
     display: inline;
     vertical-align: top; 
+}
+
+.addbutton {
+    background-color: rgb(255, 0, 127);
+}
+
+.editButton {
+    background-color: rgb(255, 128, 0);
+}
+
+.saveButton {
+    background-color: rgb(0, 153, 0);
+}
+
+.deleteButton {
+    background-color: rgb(255, 0, 0);    
 }
 
 .headerTextarea {
