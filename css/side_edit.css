@@ -1,4 +1,22 @@
-.addbutton, .editButton, .saveButton, .deleteButton {
+.smallAddButton {
+    border: none;
+    background-color: orange;
+    width: 100%;
+    text-align: center;
+}
+
+.smallAddButton:hover {
+    background-color: rgb(153, 76, 0);
+}
+
+body {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+}
+
+
+.addbutton, .editButton, .deleteButton, .saveButton{
     border: none;
     color: white;
     padding: 15px 32px;
@@ -9,6 +27,10 @@
     vertical-align: top; 
 }
 
+.saveButton {
+    background-color: green;
+}
+
 .addbutton {
     background-color: rgb(255, 0, 127);
 }
@@ -17,23 +39,14 @@
     background-color: rgb(255, 128, 0);
 }
 
-.saveButton {
-    background-color: rgb(0, 153, 0);
-}
-
 .deleteButton {
     background-color: rgb(255, 0, 0);    
 }
 
 .headerTextarea {
     height: 47px;
-    width: 500px;
+    width: 642px;
     margin-top: 0;
     resize: none;
     display: inline; 
-}
-
-#sites_wrapper article {
-    display: block;    
-    padding: 0;
 }

@@ -89,6 +89,11 @@ function setArticleId($index = -1) {
     
     $conn = conn();
     $once = false;
+    
+    if ($index == 0) {
+        $once = true;
+    }
+
     for ($i = 0; $i < $data["total"]; ++$i) {
         if ($index != -1) {
             if ($i == $index && !$once) {
@@ -96,7 +101,7 @@ function setArticleId($index = -1) {
                 $once = true;
             }
         }
- 
+        echo "StartId: " . $startId .  "b"; 
         $sql = "UPDATE save_articles SET realId=$i WHERE id=$startId"; 
         if ($conn->query($sql) == true) {
             //echo "Updating sucessfull";
