@@ -30,8 +30,7 @@ $conn->close();
 
 $sql = "CREATE TABLE IF NOT EXISTS save_articles (
     id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    header VARCHAR(100), 
-    realId INT 
+    header VARCHAR(100) 
 )";
 
 $conn = conn();
@@ -69,64 +68,19 @@ function getArticleDB() {
     return $array;
 }
 
-function setArticleId($index = -1) {
+function myreset() {
     $conn = conn();
-    $sql = "SELECT id FROM save_articles LIMIT 1";
-    $result = $conn->query($sql);
-    $startId = -1;
-    if ($result->num_rows > 0) {
-        while($row = $result->fetch_assoc()) {
-            $startId = $row["id"]; 
-        }
+    $sql = "DROP TABLE save_articles";
+    
+    if ($conn->query($sql)) {
+        //echo "Table deleted succesfull";
     } else {
-        echo "0 results";
-    }
-     
-    $conn = conn();
-    $sql = "SELECT count(*) as total from save_articles";
-    $result = $conn->query($sql);
-    $data = $result->fetch_assoc();
-    
-    $conn = conn();
-    $once = false;
-    
-    if ($index == 0) {
-        $once = true;
-    }
-
-    for ($i = 0; $i < $data["total"]; ++$i) {
-        if ($index != -1) {
-            if ($i == $index && !$once) {
-                $startId++;
-                $once = true;
-            }
-        }
-        echo "StartId: " . $startId .  "b"; 
-        $sql = "UPDATE save_articles SET realId=$i WHERE id=$startId"; 
-        if ($conn->query($sql) == true) {
-            //echo "Updating sucessfull";
-        } else {
-            echo "Error updating record: " . $conn->error;
-        }
-        $startId++;
+        echo "Error by deleting: " . $conn->error;
     }
 }
 
-function deleteArticle($index) {
-    setArticleId();     
-    $conn = conn(); 
-    $sql = "DELETE FROM save_articles WHERE realId=$index";
-    
-    if ($conn->query($sql) === true) {
-        //echo "Deleted successful data"; 
-    } else {
-        echo "Error deleting data: " . $conn->error();
-    }
-    setArticleId($index);
-}
-
-if (isset($_GET["delete"], $_GET["index"])) {
-    deleteArticle($_GET["index"]);
+if (isset($_GET["getArticle"])) {
+    echo json_encode(getArticleDB()); 
 }
 
 if (isset($_POST["header"])) {
@@ -134,6 +88,7 @@ if (isset($_POST["header"])) {
     addArticleDB($_POST["header"]); 
 }
 
-if (isset($_GET["getArticle"])) {
-    echo json_encode(getArticleDB()); 
+if (isset($_GET["reset"])) {
+    myreset();
+    echo "Reset succesfull";
 }
