@@ -1,5 +1,11 @@
 "use strict"
 
+var holdData = {
+    article:  [],
+    header: [],
+    currentTarget: -1
+};
+
 function drawSmallAddButton(e, before = false, referenceNode) {
     var wrapper = document.getElementById("sites_wrapper");
     var smallAddButton = document.createElement("button");
@@ -24,6 +30,32 @@ function addSaveButton() {
     wrapper.appendChild(saveButton);
 
     saveButton.addEventListener("click", saveButtonEvent);
+}
+
+function drawBackButton() {
+    var wrapper = document.getElementById("sites_wrapper");
+    var backButton = document.createElement("button");
+    backButton.innerHTML =  "go back";    
+    backButton.setAttribute("class", "backButton");
+    wrapper.appendChild(backButton);
+
+    backButton.addEventListener("click", backButtonEvent);
+}
+
+function backButtonEvent(e) {
+    var id = holdData.currentTarget;
+    holdData.article[id] = document.getElementById("article_textarea").value;
+    e.currentTarget.remove();
+    document.getElementById("article_textarea").remove();
+    addSaveButton();  
+    drawSmallAddButton(); 
+    drawArticlesWidthGivenData();
+}
+
+function drawArticlesWidthGivenData() {
+    holdData.header.forEach( elem => {
+        createEditArticle(false, elem, true);
+    });
 }
 
 function drawArticles(e) {
@@ -63,6 +95,43 @@ function deleteButtonEvent(e) {
     nextSiblingNode.remove();
 }
 
+function editArticleEvent(e) {
+    var parentNodeId = e.currentTarget.parentNode.id;
+    var id = "";
+    var counter = 11;
+    var isNumber = true;
+    while (isNumber) {
+        if (parentNodeId.charAt(counter)) {
+            isNumber = true; 
+            id += parentNodeId.charAt(counter);
+        } else {
+            isNumber = false;
+        }
+        counter++;
+    }
+    holdData.currentTarget = id;
+
+    var wrapper = document.getElementById("sites_wrapper");
+
+    var allEditArticles = document.querySelectorAll(".edit_article");
+    var count = 0;
+    allEditArticles.forEach( (elem) => {
+        var textarea = document.querySelector("#" + elem.id + " textarea");
+        holdData.header[count] = textarea.value;        
+        count++;
+    });
+
+    wrapper.textContent = "";    
+    drawBackButton();
+
+    var textArea = document.createElement("textarea");
+    textArea.setAttribute("id", "article_textarea");
+    if (holdData.article[id]) {
+        textArea.value = holdData.article[id];
+    } 
+    wrapper.appendChild(textArea); 
+}
+
 function createEditArticle(e, header = "", append = false) {
     var article = document.createElement("article"); 
     article.setAttribute("class", "edit_article");
@@ -89,6 +158,7 @@ function createEditArticle(e, header = "", append = false) {
     deleteButton.innerHTML = "delete"; 
     article.appendChild(deleteButton);
 
+    editButton.addEventListener("click", editArticleEvent);
     deleteButton.addEventListener("click", deleteButtonEvent);
 
     addId();

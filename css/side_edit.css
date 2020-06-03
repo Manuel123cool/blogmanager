@@ -16,7 +16,7 @@ body {
 }
 
 
-.addbutton, .editButton, .deleteButton, .saveButton{
+.addbutton, .editButton, .deleteButton, .saveButton, .backButton {
     border: none;
     color: white;
     padding: 15px 32px;
@@ -27,8 +27,21 @@ body {
     vertical-align: top; 
 }
 
+#article_textarea {
+    width: 650px;
+    height: 450px;
+}
+
+.backButton {
+    background-color: orange;
+}
+
 .saveButton {
     background-color: green;
+}
+
+.saveButton:active {
+    background-color: rgb(51, 255, 153);
 }
 
 .addbutton {
