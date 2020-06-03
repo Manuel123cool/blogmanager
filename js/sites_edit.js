@@ -64,9 +64,10 @@ function drawArticles(e) {
         if (xmlhttp0.readyState==4 && xmlhttp0.status==200) {
             var json = JSON.parse(xmlhttp0.responseText);
             console.log(json);
-            json.forEach( (elem) => {
-                createEditArticle(false, elem, true);        
-            }); 
+            for (var i = 0; i < json.length; ++i) {
+                createEditArticle(false, json[i][0], true);        
+                holdData.article[i] = json[i][1];
+            }
             addId();
         }
     });
@@ -91,8 +92,26 @@ function deleteButtonEvent(e) {
     var parentNode = e.currentTarget.parentNode;
     var nextSiblingNode = parentNode.nextSibling;
     
+    var parentNodeId = parentNode.id;
+    var id = 0;
+    var counter = 11;
+    var isNumber = true;
+    while (isNumber) {
+        if (parentNodeId.charAt(counter)) {
+            isNumber = true; 
+            id += parentNodeId.charAt(counter);
+        } else {
+            isNumber = false;
+        }
+        counter++;
+    }
+    
+    holdData.article.splice(id, 1); 
+    holdData.header.splice(id, 1); 
+
     parentNode.remove();
     nextSiblingNode.remove();
+    addId();
 }
 
 function editArticleEvent(e) {
@@ -163,14 +182,29 @@ function createEditArticle(e, header = "", append = false) {
 
     addId();
     if (!append) {
+        var id = 0;
+        var counter = 11;
+        var isNumber = true;
+        while (isNumber) {
+            if (article.id.charAt(counter)) {
+                isNumber = true;
+                id += article.id.charAt(counter);
+            } else {
+                isNumber = false;
+            }
+            counter++;
+        }
+ 
+        holdData.article.splice(id, 0, "");
+        console.log(holdData.article);
         drawSmallAddButton(false, true, article);
     } else {
         drawSmallAddButton();
     }
 }
 
-function sendData(array) {
-    array.forEach( elem => {
+function sendData(headerArray, articleArray) {
+    for (var i = 0; i < headerArray.length; i++) {
         var xmlhttp0 = new XMLHttpRequest();
         xmlhttp0.addEventListener('readystatechange', (e) => {
             if (xmlhttp0.readyState==4 && xmlhttp0.status==200) {
@@ -180,27 +214,29 @@ function sendData(array) {
         });
         xmlhttp0.open('POST', "php/save_article.php", true);
         xmlhttp0.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xmlhttp0.send("header=" + elem);
-    });
+        xmlhttp0.send("header=" + headerArray[i] + "&article="  + articleArray[i]);
+    }
 }
 
 function saveButtonEvent(e) {
-    var dataArray = [];
+    var headerArray = [];
 
     var count = 0;
     var allEditArticles = document.querySelectorAll(".edit_article");
     allEditArticles.forEach( (elem) => {
         var id = elem.id;
-        dataArray[count] = document.querySelector("#" + id + " textarea").value; 
+        headerArray[count] = document.querySelector("#" + id + " textarea").value; 
         count++;
     });
+
+    var articleArray = holdData.article;
 
     var xmlhttp0 = new XMLHttpRequest();
     xmlhttp0.addEventListener('readystatechange', (e) => {
         if (xmlhttp0.readyState==4 && xmlhttp0.status==200) {
             var responseText = xmlhttp0.responseText;
             console.log(responseText);
-            sendData(dataArray);
+            sendData(headerArray, articleArray);
         }
     });
     xmlhttp0.open('GET', "php/save_article.php?reset=true", true);

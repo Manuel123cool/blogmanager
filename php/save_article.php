@@ -30,7 +30,8 @@ $conn->close();
 
 $sql = "CREATE TABLE IF NOT EXISTS save_articles (
     id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    header VARCHAR(100) 
+    header VARCHAR(100),
+    article VARCHAR(5000) 
 )";
 
 $conn = conn();
@@ -42,12 +43,12 @@ if ($conn->query($sql) === true) {
 $conn->close();
 
 
-function addArticleDB($header) {
-    $sql = "INSERT INTO save_articles (header)
-                 VALUES (?)";
+function addArticleDB($header, $article) {
+    $sql = "INSERT INTO save_articles (header, article)
+                 VALUES (?, ?)";
     $conn = conn();
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $header);
+    $stmt->bind_param("ss", $header, $article);
     $stmt->execute();
  
 }
@@ -60,7 +61,7 @@ function getArticleDB() {
     if ($result->num_rows > 0) {
         $count = 0;
         while ($row = $result->fetch_assoc()) {
-            $array[$count] = array($row["header"]);
+            $array[$count] = array($row["header"], $row["article"]);
             $count++;
         }
 
@@ -83,9 +84,9 @@ if (isset($_GET["getArticle"])) {
     echo json_encode(getArticleDB()); 
 }
 
-if (isset($_POST["header"])) {
-    echo $_POST["header"];
-    addArticleDB($_POST["header"]); 
+if (isset($_POST["header"], $_POST["article"])) {
+    addArticleDB($_POST["header"], $_POST["article"]); 
+    echo "Data send succesfully";
 }
 
 if (isset($_GET["reset"])) {
