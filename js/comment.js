@@ -29,7 +29,6 @@ function addElements(article, date, name) {
     article.appendChild(elemDate);
 }
 
-
 function addArticle(name, comment, date, index, plusIndex = 0) {
     var wrapper = document.getElementById("comment_wrapper");  
     var article = document.createElement('article');        
