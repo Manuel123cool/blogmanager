@@ -204,18 +204,17 @@ function createEditArticle(e, header = "", append = false) {
 }
 
 function sendData(headerArray, articleArray) {
-    for (var i = 0; i < headerArray.length; i++) {
-        var xmlhttp0 = new XMLHttpRequest();
-        xmlhttp0.addEventListener('readystatechange', (e) => {
-            if (xmlhttp0.readyState==4 && xmlhttp0.status==200) {
-                var responseText = xmlhttp0.responseText;
-                console.log(responseText);
-            }
-        });
-        xmlhttp0.open('POST', "php/save_article.php", true);
-        xmlhttp0.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xmlhttp0.send("header=" + headerArray[i] + "&article="  + articleArray[i]);
-    }
+    var xmlhttp0 = new XMLHttpRequest();
+    xmlhttp0.addEventListener('readystatechange', (e) => {
+        if (xmlhttp0.readyState==4 && xmlhttp0.status==200) {
+            var responseText = xmlhttp0.responseText;
+            console.log(responseText);
+        }
+    });
+    xmlhttp0.open('POST', "php/save_article.php", true);
+    xmlhttp0.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xmlhttp0.send("header=" + JSON.stringify(headerArray) + 
+        "&article="  + JSON.stringify(articleArray));
 }
 
 function saveButtonEvent(e) {

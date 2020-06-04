@@ -85,7 +85,12 @@ if (isset($_GET["getArticle"])) {
 }
 
 if (isset($_POST["header"], $_POST["article"])) {
-    addArticleDB($_POST["header"], $_POST["article"]); 
+    $header = json_decode($_POST["header"]);
+    $article = json_decode($_POST["article"]);
+    
+    for ($i = 0; $i < count($header); $i++) {
+        addArticleDB($header[$i], $article[$i]); 
+    } 
     echo "Data send succesfully";
 }
 
