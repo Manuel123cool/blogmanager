@@ -1,5 +1,62 @@
 "use strict";
 
+let urlPar = {
+    checkPar: function (rePageChar = false) {
+        let url = window.location.href;
+        let indexPage = url.search("page=");
+        let indexIndex = url.search("index=");
+        let firstPageChar = 'h';
+        
+        if (indexPage != -1) {
+            firstPageChar = url.charAt(indexPage + 5); 
+        } 
+
+        if (rePageChar) {
+            return firstPageChar;
+        }
+ 
+        let index = 0;
+        if (indexIndex != -1) {
+            var counter = indexIndex ;
+            var isNumber = true;
+            while (isNumber) {
+                if (url.charAt(counter + 6)) {
+                    isNumber = true; 
+                    index += url.charAt(counter + 6);
+                } else {
+                    isNumber = false;
+                }
+                counter++;
+            }
+        }
+ 
+        switch (firstPageChar) {
+            case 'h':
+                drawArticles();   
+                return true;
+            case 'a':
+                drawArticleUponIndex(index); 
+                return true;
+            default:
+                drawArticles();
+                return true;
+        }
+    },
+    insertParam: function(value, siteIndex = false)
+    {
+        value = encodeURIComponent(value);
+        let key = 'page';
+        let oldPar = '';
+        if (siteIndex) {
+            oldPar = 'page=article&';
+            key = 'index';
+        }
+        let url = 'index.html?' + oldPar + key + '=' + value;
+        window.history.pushState(null, null, url);
+        this.checkPar();
+    }
+}
+
 var holdData = {
     article: [],
     header: []
@@ -15,7 +72,7 @@ function getSitesData(e) {
                 holdData.article[i] = json[i][1];
                 holdData.header[i] = json[i][0];
             }
-            drawArticles();
+            urlPar.checkPar();
         }
     });
     xmlhttp0.open("GET", "php/save_article.php?getArticle=true");
@@ -26,6 +83,7 @@ document.addEventListener("DOMContentLoaded", getSitesData);
 
 function drawArticles() {
     var wrapper = document.getElementById("site_wrapper");
+    wrapper.textContent = "";
     for (var i = 0; i < holdData.header.length; ++i) {
         var headerElem = document.createElement("h3");
         var linkHeader = document.createElement("a");
@@ -53,8 +111,15 @@ function seeArticle(e) {
         }
         counter++;
     }
-    var wrapper = document.getElementById("site_wrapper");
-    wrapper.textContent = "";  
-    wrapper.insertAdjacentHTML("beforeend", holdData.article[Number(id)]);
+    urlPar.insertParam(Number(id), true);
 }
 
+function drawArticleUponIndex(index) {
+    var wrapper = document.getElementById("site_wrapper");
+    wrapper.textContent = "";  
+    wrapper.insertAdjacentHTML("beforeend", holdData.article[Number(index)]);
+}
+
+window.onpopstate = function(event) {
+    urlPar.checkPar();
+}
