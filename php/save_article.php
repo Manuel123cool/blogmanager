@@ -84,7 +84,7 @@ if (isset($_GET["getArticle"])) {
     echo json_encode(getArticleDB()); 
 }
 
-if ($_COOKIE["myname"] == "Manuel" && $_COOKIE["password"] == "Password") {
+if ($_COOKIE["myname"] == "Manuel" && $_COOKIE["mypassword"] == "Password") {
 
     if (isset($_POST["header"], $_POST["article"])) {
         $header = json_decode($_POST["header"]);
