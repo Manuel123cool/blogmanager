@@ -84,17 +84,20 @@ if (isset($_GET["getArticle"])) {
     echo json_encode(getArticleDB()); 
 }
 
-if (isset($_POST["header"], $_POST["article"])) {
-    $header = json_decode($_POST["header"]);
-    $article = json_decode($_POST["article"]);
-    
-    for ($i = 0; $i < count($header); $i++) {
-        addArticleDB($header[$i], $article[$i]); 
-    } 
-    echo "Data send succesfully";
-}
+if ($_COOKIE["myname"] == "Manuel" && $_COOKIE["password"] == "Password") {
 
-if (isset($_GET["reset"])) {
-    myreset();
-    echo "Reset succesfull";
+    if (isset($_POST["header"], $_POST["article"])) {
+        $header = json_decode($_POST["header"]);
+        $article = json_decode($_POST["article"]);
+
+        for ($i = 0; $i < count($header); $i++) {
+            addArticleDB($header[$i], $article[$i]); 
+        } 
+        echo "Data send succesfully";
+    }
+
+    if (isset($_GET["reset"])) {
+        myreset();
+        echo "Reset succesfull";
+    }
 }
