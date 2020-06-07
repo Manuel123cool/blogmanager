@@ -31,7 +31,8 @@ $conn->close();
 $sql = "CREATE TABLE IF NOT EXISTS save_articles (
     id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     header VARCHAR(100),
-    article VARCHAR(5000) 
+    article VARCHAR(5000), 
+    db_id INT
 )";
 
 $conn = conn();
@@ -43,12 +44,12 @@ if ($conn->query($sql) === true) {
 $conn->close();
 
 
-function addArticleDB($header, $article) {
-    $sql = "INSERT INTO save_articles (header, article)
-                 VALUES (?, ?)";
+function addArticleDB($header, $article, $db_id) {
+    $sql = "INSERT INTO save_articles (header, article, db_id)
+                 VALUES (?, ?, ?)";
     $conn = conn();
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $header, $article);
+    $stmt->bind_param("ssi", $header, $article, $db_id);
     $stmt->execute();
  
 }
@@ -61,7 +62,7 @@ function getArticleDB() {
     if ($result->num_rows > 0) {
         $count = 0;
         while ($row = $result->fetch_assoc()) {
-            $array[$count] = array($row["header"], $row["article"]);
+            $array[$count] = array($row["header"], $row["article"], $row["db_id"]);
             $count++;
         }
 
@@ -84,20 +85,24 @@ if (isset($_GET["getArticle"])) {
     echo json_encode(getArticleDB()); 
 }
 
-if ($_COOKIE["myname"] == "Manuel" && $_COOKIE["mypassword"] == "Password") {
+if (isset($_COOKIE["myname"], $_COOKIE["mypassword"])) {
+    if ($_COOKIE["myname"] == "Manuel" && 
+            password_verify("Password", $_COOKIE["mypassword"])) {
 
-    if (isset($_POST["header"], $_POST["article"])) {
-        $header = json_decode($_POST["header"]);
-        $article = json_decode($_POST["article"]);
+        if (isset($_POST["header"], $_POST["article"], $_POST["db_id"])) {
+            $header = json_decode($_POST["header"]);
+            $article = json_decode($_POST["article"]);
+            $db_id = json_decode($_POST["db_id"]);
 
-        for ($i = 0; $i < count($header); $i++) {
-            addArticleDB($header[$i], $article[$i]); 
-        } 
-        echo "Data send succesfully";
-    }
+            for ($i = 0; $i < count($header); $i++) {
+                addArticleDB($header[$i], $article[$i], $db_id[$i]); 
+            } 
+            echo "Data send succesfully";
+        }
 
-    if (isset($_GET["reset"])) {
-        myreset();
-        echo "Reset succesfull";
+        if (isset($_GET["reset"])) {
+            myreset();
+            echo "Reset succesfull";
+        }
     }
 }

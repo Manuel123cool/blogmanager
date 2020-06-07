@@ -3,6 +3,8 @@
 var holdData = {
     article:  [],
     header: [],
+    db_id: [],
+    db_id_counter: 0,
     currentTarget: -1
 };
 
@@ -67,13 +69,27 @@ function drawArticles(e) {
             for (var i = 0; i < json.length; ++i) {
                 createEditArticle(false, json[i][0], true);        
                 holdData.article[i] = json[i][1];
+                holdData.db_id[i] = json[i][2];
             }
+            setCounter();
             addId();
         }
     });
     xmlhttp0.open("GET", "php/save_article.php?getArticle=true");
     xmlhttp0.send(); 
 }
+
+function setCounter(e) {
+    var start = 0; 
+    holdData.db_id.forEach( elem => {
+        elem = Number(elem);
+        if (elem > start) {
+            start = elem;  
+        }
+    }); 
+    holdData.db_id_counter = start + 1;
+}
+
 
 document.addEventListener("DOMContentLoaded", drawArticles);
 document.addEventListener("DOMContentLoaded", addSaveButton);
@@ -107,6 +123,8 @@ function deleteButtonEvent(e) {
     }
     
     holdData.article.splice(id, 1); 
+    holdData.db_id.splice(id, 1);
+    setCounter();
     holdData.header.splice(id, 1); 
 
     parentNode.remove();
@@ -195,7 +213,10 @@ function createEditArticle(e, header = "", append = false) {
             counter++;
         }
  
+        id = Number(id); 
         holdData.article.splice(id, 0, "");
+        holdData.db_id.splice(id, 0, holdData.db_id_counter);
+        setCounter();
         console.log(holdData.article);
         drawSmallAddButton(false, true, article);
     } else {
@@ -203,7 +224,7 @@ function createEditArticle(e, header = "", append = false) {
     }
 }
 
-function sendData(headerArray, articleArray) {
+function sendData(headerArray, articleArray, db_id) {
     var xmlhttp0 = new XMLHttpRequest();
     xmlhttp0.addEventListener('readystatechange', (e) => {
         if (xmlhttp0.readyState==4 && xmlhttp0.status==200) {
@@ -214,7 +235,8 @@ function sendData(headerArray, articleArray) {
     xmlhttp0.open('POST', "php/save_article.php", true);
     xmlhttp0.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xmlhttp0.send("header=" + JSON.stringify(headerArray) + 
-        "&article="  + JSON.stringify(articleArray));
+        "&article="  + JSON.stringify(articleArray) + 
+            "&db_id=" + JSON.stringify(db_id));
 }
 
 function saveButtonEvent(e) {
@@ -229,13 +251,13 @@ function saveButtonEvent(e) {
     });
 
     var articleArray = holdData.article;
-
+    var db_id = holdData.db_id;
     var xmlhttp0 = new XMLHttpRequest();
     xmlhttp0.addEventListener('readystatechange', (e) => {
         if (xmlhttp0.readyState==4 && xmlhttp0.status==200) {
             var responseText = xmlhttp0.responseText;
             console.log(responseText);
-            sendData(headerArray, articleArray);
+            sendData(headerArray, articleArray, holdData.db_id);
         }
     });
     xmlhttp0.open('GET', "php/save_article.php?reset=true", true);
