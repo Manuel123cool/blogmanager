@@ -1,4 +1,5 @@
 <?php
+include "split.php";
 
 $servername = "localhost";
 $username = "root";
@@ -109,41 +110,6 @@ function createComTable($db_id) {
     $conn->close();
 }
 
-function delTables($db_ids) {
-    $pdo = new PDO('mysql:host=localhost;dbname=comments', "root", "");
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    $query = $pdo->prepare('show tables');
-    $query->execute();
-
-    $allTableArray = Array();
-    $count = 0;
-    while($rows = $query->fetch(PDO::FETCH_ASSOC)){
-        $allTableArray[$count] = $rows["Tables_in_comments"]; 
-        $count++;
-    }
-    
-    $tableForDel = Array();
-    $count2 = 0;
-    foreach ($allTableArray as $value) {
-        $oneIsIn = false;
-        foreach ($db_ids as $value1) {
-            if ("my_comments$value1" == $value) {
-                $oneIsIn = true;
-            } 
-        }
-        if (!$oneIsIn) {
-            $tableForDel[$count2] = $value;
-            $count2++;
-        }
-    }
-    
-    foreach ($tableForDel as $delTable) {
-        $sql = "DROP TABLE $delTable";
-        $pdo->query($sql);
-    } 
-}
-
 function tableExists($pdo, $table) {
     try {
         $result = $pdo->query("SELECT 1 FROM $table LIMIT 1");
@@ -165,6 +131,8 @@ function delOneTable($id) {
             echo "drop table error ". $e->getMessage();
         }
     }
+    global $split;
+    $split->deleteTables($id);
 }
 
 if (isset($_GET["getArticle"])) {
@@ -189,7 +157,6 @@ if (isset($_COOKIE["myname"], $_COOKIE["mypassword"])) {
                 addArticleDB($header[$i], $article[$i], $db_id[$i]); 
                 createComTable($db_id[$i]);
             } 
-            delTables($db_id);
             echo "Data send succesfully";
         }
 
