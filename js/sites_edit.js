@@ -130,6 +130,17 @@ function deleteButtonEvent(e) {
     parentNode.remove();
     nextSiblingNode.remove();
     addId();
+
+    var xmlhttp0 = new XMLHttpRequest();
+    xmlhttp0.addEventListener('readystatechange', (e) => {
+        if (xmlhttp0.readyState==4 && xmlhttp0.status==200) {
+            var responseText = xmlhttp0.responseText;
+            console.log(responseText);
+        }
+    });
+    xmlhttp0.open('POST', "php/save_article.php", true);
+    xmlhttp0.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xmlhttp0.send("deleteOneTable=true&table_id=" + (Number(id) + 1));
 }
 
 function editArticleEvent(e) {

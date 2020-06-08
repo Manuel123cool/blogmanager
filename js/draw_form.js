@@ -45,5 +45,3 @@ function drawForm() {
     input1.setAttribute("value", "Submit");
     form.appendChild(input1); 
 }
-
-document.addEventListener('DOMContentLoaded', drawForm);

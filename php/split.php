@@ -18,8 +18,8 @@ class Split {
         return $conn;
     }
 
-    function setData() {
-        $sql = "SELECT * FROM my_comments";    
+    function setData($site_index) {
+        $sql = "SELECT * FROM my_comments$site_index";    
         $conn = $this->conn();
         $result = $conn->query($sql);
         $array = Array();
@@ -36,12 +36,12 @@ class Split {
         $this->dataArray = $array;
     }
 
-    function mkTableAndInsert($array) {
+    function mkTableAndInsert($array, $site_index) {
         if (!is_array($array)) {
             return -1; 
         }
 
-        $sql = "CREATE TABLE IF NOT EXISTS comments$this->tableNumLength (
+        $sql = "CREATE TABLE IF NOT EXISTS " . $site_index."comments$this->tableNumLength(
             id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
             comment VARCHAR(1000),
             name VARCHAR(30),
@@ -59,14 +59,15 @@ class Split {
         $conn->close();
     
         foreach ($array as $value) {
-            $this->insertData($value[0], $value[1], $value[2], $value[3], $value[4]);
+            $this->insertData($value[0], $value[1], $value[2], 
+                                $value[3], $value[4], $site_index);
         }
 
         $this->tableNumLength++;
     } 
 
-    function insertData($name, $comment, $date, $reply_num, $into_div) {
-        $sql = "INSERT INTO comments$this->tableNumLength   
+    function insertData($name, $comment, $date, $reply_num, $into_div, $site_index) {
+        $sql = "INSERT INTO " . $site_index . "comments$this->tableNumLength   
             (comment, name, date, reply_num, into_div)
                      VALUES (?, ?, ?, ?, ?)";
         $conn = $this->conn();
@@ -236,27 +237,27 @@ class Split {
         return $reArray;
     }
 
-    function split() {
+    function my_split($site_index) {
         $split = true; 
         $dummyArray = $this->newArray;
         $count = 0;
         while ($split) {
             $untilIndex = $this->reUntilIndex($dummyArray); 
             if ($untilIndex == 0) {
-                $this->mkTAbleAndInsert($dummyArray);
+                $this->mkTAbleAndInsert($dummyArray, $site_index);
                 $split = false;
             } elseif  ($untilIndex != -1) {
                 $insertArray = $this->reInsertArray($dummyArray, $untilIndex); 
-                $this->mkTAbleAndInsert($insertArray);
+                $this->mkTAbleAndInsert($insertArray, $site_index);
                 $dummyArray = $this->reDelPortion($dummyArray, $untilIndex);
             } else  {
-                $this->mkTAbleAndInsert($dummyArray);
+                $this->mkTAbleAndInsert($dummyArray, $site_index);
                 $split = false; 
             }
         }
     }
 
-    function deleteTables() {
+    function deleteTables($site_index) {
         $count = 0;
         $table = true;
         while ($table) {
@@ -265,13 +266,13 @@ class Split {
               die("Connection failed: " . $conn->connect_error);
             }
 
-            $sql = "select 1 from comments$count LIMIT 1";
+            $sql = "select 1 from " . $site_index ."comments$count LIMIT 1";
             $result = $conn->query($sql);
 
             if($result !== FALSE) {
                 $conn = $this->conn();
 
-                $result = $conn->query("DROP TABLE comments$count");
+                $result = $conn->query("DROP TABLE " . $site_index . "comments$count");
 
                 if($result !== FALSE)
                 {

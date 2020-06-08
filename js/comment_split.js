@@ -1,5 +1,20 @@
 "use strict"
-function getLength() {
+
+var currentSite2 = -1;
+
+function insertCommentAndLength(siteIndex) {
+    var xmlhttp0 = new XMLHttpRequest();
+    xmlhttp0.addEventListener('readystatechange', (e) => {
+        if (xmlhttp0.readyState==4 && xmlhttp0.status==200) {
+            var length = xmlhttp0.responseText;
+            insertComments(siteIndex, length);
+        }
+    });
+    xmlhttp0.open('GET', 'php/comment.php?wantLength=true&site_index=' + (siteIndex + 1));
+    xmlhttp0.send();    
+}
+ 
+function getLength(site_index) {
     var xmlhttp0 = new XMLHttpRequest();
     xmlhttp0.addEventListener('readystatechange', (e) => {
         if (xmlhttp0.readyState==4 && xmlhttp0.status==200) {
@@ -7,8 +22,9 @@ function getLength() {
             drawIndexes(responseText);
         }
     });
-    xmlhttp0.open('GET', 'php/comment.php?wantLength=true');
+    xmlhttp0.open('GET', 'php/comment.php?wantLength=true&site_index=' + (site_index + 1));
     xmlhttp0.send();    
+    currentSite2 = site_index;
 }
 
 function drawIndexes(arIndexLength) {
@@ -22,22 +38,6 @@ function drawIndexes(arIndexLength) {
         indexLink.addEventListener('click', indexLinkEvent);  
     }
 }
-
-document.addEventListener('DOMContentLoaded', getLength);
-
-function drawIndexes(arIndexLength) {
-    var index_wrapper = document.getElementById('index_wrapper');
-    for (var i = 0; i < arIndexLength; ++i) {
-        var indexLink = document.createElement('a');
-        indexLink.innerHTML = i + 1;     
-        indexLink.setAttribute('href', '');
-        index_wrapper.appendChild(indexLink);
-
-        indexLink.addEventListener('click', indexLinkEvent);  
-    }
-}
-
-document.addEventListener('DOMContentLoaded', getLength);
 
 function indexLinkEvent(e) {
     e.preventDefault();
@@ -49,7 +49,8 @@ function indexLinkEvent(e) {
             getPlusIndex(array, index);
         }
     });
-    xmlhttp0.open('GET', 'php/comment.php?wantData=true&index=' + index);
+    xmlhttp0.open('GET', 'php/comment.php?wantData=true&index=' + index + "&site_index=" +
+       (currentSite2 + 1));
     xmlhttp0.send();    
 }
 
@@ -80,7 +81,7 @@ function getPlusIndex(array, index) {
         }
     });
     xmlhttp0.open('GET', 'php/comment.php?wantIndexPlus=true&indexForPlus=' + 
-           index );
+           index + "&site_index" + (currentSite2 + 1));
     xmlhttp0.send();    
 }   
 

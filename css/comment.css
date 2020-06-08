@@ -25,7 +25,6 @@
     border: 2px solid Blue;
     border-radius: 25px;
     margin-top: 10px;
-    transition: margin-top 1s, margin-bottom 1s;
 }
 
 body {
@@ -42,7 +41,3 @@ body {
     margin-left: 100px;
 }
 
-#comment_wrapper article:hover {
-    margin-top: 20px;
-    margin-bottom: 20px;
-}

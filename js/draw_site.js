@@ -1,5 +1,7 @@
 "use strict";
 
+var siteIndex2 = -1;
+
 let urlPar = {
     checkPar: function (rePageChar = false) {
         let url = window.location.href;
@@ -11,10 +13,6 @@ let urlPar = {
             firstPageChar = url.charAt(indexPage + 5); 
         } 
 
-        if (rePageChar) {
-            return firstPageChar;
-        }
- 
         let index = 0;
         if (indexIndex != -1) {
             var counter = indexIndex ;
@@ -28,6 +26,7 @@ let urlPar = {
                 }
                 counter++;
             }
+            siteIndex2 = index;
         }
  
         switch (firstPageChar) {
@@ -81,6 +80,16 @@ function getSitesData(e) {
 
 document.addEventListener("DOMContentLoaded", getSitesData);
 
+function delCommentWrapper() {
+    var indexWrapper = document.getElementById("index_wrapper");
+    var commentWrapper = document.getElementById("comment_wrapper");
+    var comment_form_wrapper = document.getElementById("comment_form_wrapper");
+   
+    indexWrapper.textContent = "";
+    commentWrapper.textContent = "";
+    comment_form_wrapper.textContent = "";
+}
+
 function drawArticles() {
     var wrapper = document.getElementById("site_wrapper");
     wrapper.textContent = "";
@@ -95,6 +104,13 @@ function drawArticles() {
         headerElem.appendChild(linkHeader); 
         wrapper.appendChild(headerElem);
     }
+    delCommentWrapper(); 
+}
+
+function allCommentFunc() {
+    drawForm(); 
+    insertCommentAndLength(Number(siteIndex2)); 
+    getLength(Number(siteIndex2)); 
 }
 
 function seeArticle(e) {
@@ -118,6 +134,7 @@ function drawArticleUponIndex(index) {
     var wrapper = document.getElementById("site_wrapper");
     wrapper.textContent = "";  
     wrapper.insertAdjacentHTML("beforeend", holdData.article[Number(index)]);
+    allCommentFunc();
 }
 
 window.onpopstate = function(event) {

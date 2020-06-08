@@ -10,6 +10,8 @@ var commentObj = {
     arrayOfReplyId: []
 };
 
+var currentSite = -1;
+
 function elemComment(article, comment) {
     var elemComment = document.createElement('p');
     elemComment.innerHTML = comment;
@@ -161,7 +163,7 @@ function sendData(e) {
     xmlhttp0.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xmlhttp0.send('name=' + name + '&comment=' + comment +
                         '&date=' + date + '&reply_num=' + reply_num +
-                            add_div);    
+                            add_div + "&site_index=" + (currentSite + 1));    
 }
 
 var insert = {
@@ -188,9 +190,7 @@ var insert = {
     }
 }
 
-document.addEventListener('DOMContentLoaded', insertComments);
-
-function insertComments() {
+function insertComments(siteIndexArg, siteLength) {
     var form = document.getElementById("form");
     form.addEventListener("submit", sendData);
 
@@ -216,8 +216,11 @@ function insertComments() {
             });
         }
     });
-    xmlhttp0.open('GET', 'php/comment.php?wantData=true&index=0');
+    xmlhttp0.open('GET', 'php/comment.php?wantData=true&index=' + 
+                    (siteLength - 1) + '&site_index=' + (siteIndexArg + 1));
     xmlhttp0.send();    
+    
+    currentSite = siteIndexArg;
 }
 
 function reply(e) {

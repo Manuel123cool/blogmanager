@@ -29,39 +29,23 @@ if ($conn->query($sql) === TRUE) {
 }
 $conn->close();
 
-$sql = "CREATE TABLE IF NOT EXISTS my_comments (
-    id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    comment VARCHAR(1000),
-    name VARCHAR(30),
-    date VARCHAR(30),
-    reply_num INT,
-    into_div VARCHAR(30) 
-)";
-$conn = conn();
-if ($conn->query($sql) === true) {
-    //echo "Table pages_data created successfully";
-} else {
-   echo "Error creating table: " . $conn->error;
-}
-$conn->close();
-
-function insertData($name, $comment, $date, $reply_num, $into_div) {
+function insertData($name, $comment, $date, $reply_num, $into_div, $site_index) {
     global $split; 
-    $sql = "INSERT INTO my_comments (comment, name, date, reply_num, into_div)
+    $sql = "INSERT INTO my_comments$site_index (comment, name, date, reply_num, into_div)
                  VALUES (?, ?, ?, ?, ?)";
     $conn = conn();
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sssis", $comment, $name, $date, $reply_num, $into_div);
     $stmt->execute();
     
-    $split->deletetables();
-    $split->setdata();
+    $split->deleteTables($site_index);
+    $split->setdata($site_index);
     $split->arrangedata();
-    $split->split();
+    $split->my_split($site_index);
 }
 
-function getdata($index) {
-    $sql = "select * from comments$index";    
+function getdata($index, $site_index) {
+    $sql = "select * from " . $site_index . "comments$index";    
     $conn = conn();
     $result = $conn->query($sql);
     $array = array();
@@ -79,18 +63,18 @@ function getdata($index) {
 }
 
 if (isset($_POST['name'], $_POST['comment'], $_POST['date'], 
-            $_POST['reply_num'], $_POST['into_div'])) {
+            $_POST['reply_num'], $_POST['into_div'], $_POST["site_index"])) {
 
     insertdata($_POST['name'], $_POST['comment'], $_POST['date'], 
-                    $_POST['reply_num'], $_POST['into_div']);    
+                    $_POST['reply_num'], $_POST['into_div'], $_POST["site_index"]);    
     echo "data arrived";
 }
 
-if (isset($_GET['wantData'], $_GET['index'])) {
-    echo json_encode(getdata($_GET['index']));  
+if (isset($_GET['wantData'], $_GET['index'], $_GET["site_index"])) {
+    echo json_encode(getdata($_GET['index'], $_GET["site_index"]));  
 }
 
-function getlength() {
+function getlength($site_index) {
     $count = 0;
     $table = true;
     $length = 0;
@@ -100,7 +84,7 @@ function getlength() {
           die("connection failed: " . $conn->connect_error);
         }
 
-        $sql = "select 1 from comments$count LIMIT 1";
+        $sql = "select 1 from " . $site_index . "comments$count LIMIT 1";
         $result = $conn->query($sql);
 
         if($result !== FALSE) {
@@ -113,18 +97,18 @@ function getlength() {
     return $length;
 }
 
-if (isset($_GET['wantLength'])) {
-    echo getLength();
+if (isset($_GET['wantLength'], $_GET["site_index"])) {
+    echo getLength($_GET["site_index"]);
 }
 
-function getIndexPlus($index) {
-    if ($index > getLength()) {
+function getIndexPlus($index, $site_index) {
+    if ($index > getLength($site_index)) {
         return "something is wrong <br>";
     }
     
     $indexPlus = 0;
     for ($i = 0; $i < $index; ++$i) {
-        $array = getData($i);
+        $array = getData($i, $site_index);
         foreach ($array as $value) {
             if ($value[3] == 0) {
                 $indexPlus++;
@@ -134,6 +118,6 @@ function getIndexPlus($index) {
     return $indexPlus;
 }
 
-if (isset($_GET['wantIndexPlus'], $_GET['indexForPlus'])) {
-    echo getIndexPlus($_GET['indexForPlus']);
+if (isset($_GET['wantIndexPlus'], $_GET['indexForPlus'], $_GET["site_index"])) {
+    echo getIndexPlus($_GET['indexForPlus'], $_GET["site_index"]);
 }
